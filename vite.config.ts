@@ -6,10 +6,13 @@ import { viteSingleFile } from 'vite-plugin-singlefile'
 // (used for the shareable Artifact link). Default build stays multi-file.
 const singleFile = process.env.SINGLEFILE === '1'
 
-export default defineConfig({
-  base: './',
+// Base path per host:
+//  - Vercel / Netlify / custom domain (served at root):   '/'  (default)
+//  - GitHub Pages project site (served at /<repo>/):       set BASE_PATH=/checkyourtarif-demo/
+export default defineConfig(() => ({
+  base: process.env.BASE_PATH ?? (singleFile ? './' : '/'),
   plugins: [react(), ...(singleFile ? [viteSingleFile()] : [])],
   build: {
     target: 'es2020',
   },
-})
+}))
