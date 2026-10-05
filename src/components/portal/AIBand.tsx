@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Icon } from '../ui/Icon'
+import { ErrorBoundary } from '../ui/ErrorBoundary'
 
 const PremiumCanvas = lazy(() =>
   import('./PremiumCanvas').then((m) => ({ default: m.PremiumCanvas })),
@@ -41,9 +42,11 @@ export function AIBand() {
         </div>
 
         <div className="kiband__visual reveal">
-          <Suspense fallback={<div className="kiband__canvas" />}>
-            <PremiumCanvas />
-          </Suspense>
+          <ErrorBoundary fallback={<div className="kiband__canvas kiband__fallback" aria-hidden="true" />}>
+            <Suspense fallback={<div className="kiband__canvas" />}>
+              <PremiumCanvas />
+            </Suspense>
+          </ErrorBoundary>
           <div className="kiband__float kiband__float--1">
             <Icon name="check" /> Bestpreis gefunden
           </div>

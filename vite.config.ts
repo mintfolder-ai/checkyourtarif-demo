@@ -13,6 +13,7 @@ export default defineConfig(() => ({
   base: process.env.BASE_PATH ?? (singleFile ? './' : '/'),
   plugins: [react(), ...(singleFile ? [viteSingleFile()] : [])],
   build: {
-    target: 'es2020',
+    // Broad compatibility: transpile down so older iOS Safari works too.
+    target: ['es2019', 'safari12.1', 'chrome80', 'firefox78'],
   },
 }))
