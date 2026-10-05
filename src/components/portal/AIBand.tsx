@@ -1,10 +1,21 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { ErrorBoundary } from '../ui/ErrorBoundary'
 
 const PremiumCanvas = lazy(() =>
   import('./PremiumCanvas').then((m) => ({ default: m.PremiumCanvas })),
 )
+
+/** Only load the WebGL 3D when the device can actually handle it. */
+function can3D(): boolean {
+  try {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
+    const c = document.createElement('canvas')
+    return !!(c.getContext('webgl') || c.getContext('experimental-webgl'))
+  } catch {
+    return false
+  }
+}
 
 const POINTS = [
   { icon: 'spark', title: 'Versteht natürliche Sprache', text: 'Beschreibe dein Anliegen in eigenen Worten statt Formulare auszufüllen.' },
@@ -13,6 +24,7 @@ const POINTS = [
 ]
 
 export function AIBand() {
+  const [show3D] = useState(can3D)
   return (
     <section className="kiband">
       <div className="shell kiband__grid">
@@ -42,11 +54,15 @@ export function AIBand() {
         </div>
 
         <div className="kiband__visual reveal">
-          <ErrorBoundary fallback={<div className="kiband__canvas kiband__fallback" aria-hidden="true" />}>
-            <Suspense fallback={<div className="kiband__canvas" />}>
-              <PremiumCanvas />
-            </Suspense>
-          </ErrorBoundary>
+          {show3D ? (
+            <ErrorBoundary fallback={<div className="kiband__canvas kiband__fallback" aria-hidden="true" />}>
+              <Suspense fallback={<div className="kiband__canvas kiband__fallback" />}>
+                <PremiumCanvas />
+              </Suspense>
+            </ErrorBoundary>
+          ) : (
+            <div className="kiband__canvas kiband__fallback" aria-hidden="true" />
+          )}
           <div className="kiband__float kiband__float--1">
             <Icon name="check" /> Bestpreis gefunden
           </div>
