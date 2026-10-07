@@ -1,29 +1,25 @@
 /**
- * Real product photos for the device demo cards.
+ * Device images for the demo cards.
  *
- * The brand names in the demo data are illustrative, so we show a representative
- * real photo per device type from a CDN that always resolves to an actual photo
- * (LoremFlickr serves real Flickr Creative-Commons images by keyword). A stable
- * per-offer "lock" seed keeps the same image across reloads while giving variety
- * between cards. If the CDN ever fails to load, OfferCard falls back to the
- * provider monogram, so a broken image is never shown.
+ * These are bundled locally (not fetched from an external CDN), so they always
+ * render for every visitor regardless of browser shields or ad-/script-blockers
+ * — external image CDNs get blocked (e.g. by Brave Shields) and would show
+ * nothing on a client demo. Clean vector device illustrations keyed by device
+ * type, in the brand style.
  */
-const KEYWORDS: Record<string, string> = {
-  laptop: 'laptop,notebook',
-  tv: 'television,flatscreen',
-  tablet: 'tablet,ipad',
-  handy: 'smartphone,phone',
+import laptopImg from '../assets/devices/laptop.svg'
+import tabletImg from '../assets/devices/tablet.svg'
+import tvImg from '../assets/devices/tv.svg'
+import phoneImg from '../assets/devices/phone.svg'
+
+const IMAGES: Record<string, string> = {
+  laptop: laptopImg,
+  tablet: tabletImg,
+  tv: tvImg,
+  handy: phoneImg,
 }
 
-function seedFrom(id: string): number {
-  let h = 0
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 100000
-  return h || 1
-}
-
-/** Returns a product image URL for a device category, or null for non-device ones. */
-export function productImage(categoryId: string, offerId: string): string | null {
-  const kw = KEYWORDS[categoryId]
-  if (!kw) return null
-  return `https://loremflickr.com/320/320/${kw}?lock=${seedFrom(offerId)}`
+/** Returns a bundled device image URL for a device category, or null otherwise. */
+export function productImage(categoryId: string, _offerId: string): string | null {
+  return IMAGES[categoryId] ?? null
 }
