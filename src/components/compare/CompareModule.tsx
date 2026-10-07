@@ -2,9 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { CATEGORIES } from '../../data/categories'
 import { OFFERS } from '../../data/offers'
 import { FACETS, type Facet } from '../../data/facets'
+import { CHECK24_WIDGETS } from '../../data/check24'
 import { applyFilters, countActive, emptyFilters, type FilterState } from '../../lib/filter'
 import { OfferCard } from './OfferCard'
 import { FilterSidebar } from './FilterSidebar'
+import { Check24Widget } from './Check24Widget'
 import { Icon } from '../ui/Icon'
 
 type Sort = 'empfohlen' | 'preis' | 'bewertung'
@@ -21,6 +23,7 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
   const [showFilters, setShowFilters] = useState(false)
 
   const category = CATEGORIES.find((c) => c.id === activeCat) ?? CATEGORIES[0]
+  const widget = CHECK24_WIDGETS[category.id]
   const offers = OFFERS[category.id] ?? []
   const facets = FACETS[category.id] ?? []
 
@@ -45,9 +48,13 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
       <div className="shell">
         <div className="cmp__head reveal">
           <p className="eyebrow">Live-Vergleich</p>
-          <h2 className="section-title">Die besten Tarife im direkten Vergleich</h2>
+          <h2 className="section-title">
+            {widget ? `${category.name} jetzt live vergleichen` : 'Die besten Tarife im direkten Vergleich'}
+          </h2>
           <p className="section-sub">
-            Filtere wie bei den Großen, sortiere transparent, finde deinen Tarif.
+            {widget
+              ? 'Echtzeit-Berechnung über unseren geprüften Vergleichsrechner – kostenlos und unverbindlich.'
+              : 'Filtere wie bei den Großen, sortiere transparent, finde deinen Tarif.'}
           </p>
         </div>
 
@@ -71,6 +78,16 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
           </div>
         )}
 
+        {widget ? (
+          <div className="cmp__live reveal">
+            <Check24Widget key={category.id} widget={widget} />
+            <p className="cmp__disclaimer">
+              Live-Vergleich bereitgestellt über CHECK24. Die persönliche Berechnung
+              erfolgt direkt im kostenlosen Rechner. Bei Abschluss kann eine Vergütung
+              entstehen – der Vergleich bleibt für dich kostenlos.
+            </p>
+          </div>
+        ) : (
         <div className="cmp__layout">
           <div className={`cmp__aside ${showFilters ? 'is-open' : ''}`}>
             <FilterSidebar
@@ -126,6 +143,7 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
             </p>
           </div>
         </div>
+        )}
       </div>
     </section>
   )
