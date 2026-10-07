@@ -3,6 +3,7 @@ import { CATEGORIES } from '../../data/categories'
 import { OFFERS } from '../../data/offers'
 import { FACETS, type Facet } from '../../data/facets'
 import { CHECK24_WIDGETS } from '../../data/check24'
+import { productImage } from '../../lib/productImage'
 import { applyFilters, countActive, emptyFilters, type FilterState } from '../../lib/filter'
 import { OfferCard } from './OfferCard'
 import { FilterSidebar } from './FilterSidebar'
@@ -124,7 +125,13 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
             {results.length > 0 ? (
               <div className="cmp__list">
                 {results.map((o, i) => (
-                  <OfferCard key={o.id} offer={o} rank={i + 1} href={category.href} />
+                  <OfferCard
+                    key={o.id}
+                    offer={o}
+                    rank={i + 1}
+                    href={category.href}
+                    imageUrl={productImage(category.id, o.id)}
+                  />
                 ))}
               </div>
             ) : (
