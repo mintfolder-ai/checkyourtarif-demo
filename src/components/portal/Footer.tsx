@@ -1,6 +1,6 @@
 import { TILES } from '../../data/categories'
 import { Icon } from '../ui/Icon'
-import logoUrl from '../../assets/logo.avif'
+import logoUrl from '../../assets/logo.png'
 
 const BASE = 'https://checkyourtarif.de'
 

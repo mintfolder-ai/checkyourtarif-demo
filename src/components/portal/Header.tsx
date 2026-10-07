@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { CATEGORIES } from '../../data/categories'
-import logoUrl from '../../assets/logo.avif'
+import logoUrl from '../../assets/logo.png'
 
 export function Header({ onSearch }: { onSearch: (q: string) => void }) {
   const [q, setQ] = useState('')

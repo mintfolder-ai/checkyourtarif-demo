@@ -474,6 +474,9 @@
 @media (max-width: 560px) { .hdr__logo { height: 34px; } }
 .btn { background: linear-gradient(180deg, var(--blue), var(--blue-dark)); }
 .btn:hover { background: var(--blue-dark); }
+/* keep the ghost button readable (white bg, green text) after the gradient override above */
+.btn--ghost { background: #fff; color: var(--blue-darker); border-color: var(--line-strong); }
+.btn--ghost:hover { background: var(--blue-soft); color: var(--blue-darker); box-shadow: none; }
 
 /* ===== Login page ===== */
 .login { display: flex; justify-content: center; align-items: flex-start; padding: clamp(2rem, 6vw, 5rem) 0; background: linear-gradient(180deg, #fff, var(--bg)); min-height: 72vh; }
