@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '../ui/Icon'
-import logoUrl from '../../assets/logo.avif'
+import logoUrl from '../../assets/logo.png'
 
 export function LoginPage() {
   const [sent, setSent] = useState(false)
