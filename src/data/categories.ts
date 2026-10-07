@@ -38,6 +38,17 @@ export const CATEGORIES: Category[] = [
     accent: 'gold',
   },
   {
+    id: 'paket',
+    name: 'Strom & Gas',
+    tagline: 'Strom und Gas im Komplettpaket vergleichen und doppelt sparen.',
+    savings: '1.200',
+    savingsUnit: '€ / Jahr',
+    icon: 'bolt',
+    href: `${BASE}/energievergleich`,
+    keywords: ['paket', 'komplett', 'strom und gas', 'energie', 'energievergleich', 'buendel'],
+    accent: 'gold',
+  },
+  {
     id: 'dsl',
     name: 'DSL & Internet',
     tagline: 'Highspeed-Internet zum Bestpreis mit Cashback.',
