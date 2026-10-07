@@ -1,7 +1,20 @@
+import { useState } from 'react'
 import { Icon, StarRating } from '../ui/Icon'
 import type { Offer } from '../../data/offers'
 
-export function OfferCard({ offer, rank, href }: { offer: Offer; rank: number; href: string }) {
+export function OfferCard({
+  offer,
+  rank,
+  href,
+  imageUrl,
+}: {
+  offer: Offer
+  rank: number
+  href: string
+  imageUrl?: string | null
+}) {
+  const [imgOk, setImgOk] = useState(true)
+  const showPhoto = !!imageUrl && imgOk
   return (
     <article className={`offer ${rank === 1 ? 'offer--top' : ''}`}>
       <div className="offer__rank">
@@ -14,9 +27,20 @@ export function OfferCard({ offer, rank, href }: { offer: Offer; rank: number; h
       </div>
 
       <div className="offer__provider">
-        <div className="offer__logo" aria-hidden="true">
-          {offer.provider.split(' ').map((w) => w[0]).join('').slice(0, 2)}
-        </div>
+        {showPhoto ? (
+          <div className="offer__logo offer__logo--photo">
+            <img
+              src={imageUrl as string}
+              alt={`${offer.provider} ${offer.plan}`}
+              loading="lazy"
+              onError={() => setImgOk(false)}
+            />
+          </div>
+        ) : (
+          <div className="offer__logo" aria-hidden="true">
+            {offer.provider.split(' ').map((w) => w[0]).join('').slice(0, 2)}
+          </div>
+        )}
         <div>
           <h3 className="offer__name">{offer.provider}</h3>
           <p className="offer__plan">{offer.plan}</p>

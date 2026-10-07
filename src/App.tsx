@@ -17,7 +17,7 @@ export default function App() {
   const [activeCat, setActiveCat] = useState('strom')
   const [note, setNote] = useState<string | null>(null)
 
-  useReveal()
+  useReveal(route)
   useEffect(() => {
     window.scrollTo({ top: 0 })
   }, [route])
