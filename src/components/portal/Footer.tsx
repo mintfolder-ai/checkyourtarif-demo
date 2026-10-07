@@ -1,5 +1,6 @@
 import { TILES } from '../../data/categories'
 import { Icon } from '../ui/Icon'
+import logoUrl from '../../assets/logo.avif'
 
 const BASE = 'https://checkyourtarif.de'
 
@@ -23,7 +24,7 @@ export function Footer() {
     <footer className="ftr">
       <div className="shell ftr__grid">
         <div className="ftr__brand">
-          <span className="hdr__mark" aria-hidden="true">C<span>Y</span>T</span>
+          <span className="ftr__logo"><img src={logoUrl} alt="Check Your Tarif" width="160" height="45" /></span>
           <p>
             Dein KI-gestütztes Vergleichsportal für Strom, Gas, Internet,
             Mobilfunk, Versicherungen und Kredite. Kostenlos, unabhängig und

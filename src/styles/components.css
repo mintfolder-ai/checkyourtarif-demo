@@ -498,3 +498,7 @@
 .login__back a:hover { color: var(--blue); }
 .login__done { display: flex; gap: .5rem; align-items: flex-start; background: var(--green-soft); color: #1a6b3a; border: 1px solid #bfe2c9; border-radius: var(--radius); padding: .9rem 1rem; font-size: var(--text-sm); font-weight: 600; margin-bottom: .4rem; }
 .login__done svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--green); }
+
+/* Footer logo on a white chip (visible on the green footer) */
+.ftr__logo { display: inline-block; background: #fff; border-radius: 10px; padding: 7px 12px; margin-bottom: .5rem; box-shadow: var(--shadow-sm); }
+.ftr__logo img { height: 30px; width: auto; display: block; }
