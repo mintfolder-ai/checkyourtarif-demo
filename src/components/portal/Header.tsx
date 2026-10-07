@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '../ui/Icon'
 import { CATEGORIES } from '../../data/categories'
+import logoUrl from '../../assets/logo.avif'
 
 export function Header({ onSearch }: { onSearch: (q: string) => void }) {
   const [q, setQ] = useState('')
-  const [open, setOpen] = useState(false)
   const [stuck, setStuck] = useState(false)
 
   useEffect(() => {
@@ -16,22 +16,10 @@ export function Header({ onSearch }: { onSearch: (q: string) => void }) {
 
   return (
     <header className={`hdr ${stuck ? 'hdr--stuck' : ''}`}>
-      <div className="hdr__top">
-        <div className="shell hdr__top-inner">
-          <span><Icon name="check" /> 100 % kostenlos &amp; unverbindlich</span>
-          <span><Icon name="shield" /> TÜV-geprüftes Vergleichsportal</span>
-          <span><Icon name="user" /> Über 2,4 Mio. zufriedene Nutzer</span>
-          <span className="hdr__top-right"><Icon name="headset" /> Mo bis Sa, 8 bis 20 Uhr erreichbar</span>
-        </div>
-      </div>
-
       <div className="hdr__main">
         <div className="shell hdr__main-inner">
           <a className="hdr__brand" href="#/" aria-label="Check Your Tarif Startseite">
-            <span className="hdr__mark" aria-hidden="true">C<span>Y</span>T</span>
-            <span className="hdr__brand-text">
-              Check Your <strong>Tarif</strong>
-            </span>
+            <img className="hdr__logo" src={logoUrl} alt="Check Your Tarif" width="180" height="51" />
           </a>
 
           <form
@@ -52,22 +40,14 @@ export function Header({ onSearch }: { onSearch: (q: string) => void }) {
           </form>
 
           <div className="hdr__actions">
-            <a className="hdr__login" href="#start">
+            <a className="hdr__login" href="#/login">
               <Icon name="user" /> <span>Anmelden</span>
             </a>
-            <button
-              className="hdr__burger"
-              aria-label="Menü"
-              aria-expanded={open}
-              onClick={() => setOpen((v) => !v)}
-            >
-              <Icon name="menu" />
-            </button>
           </div>
         </div>
       </div>
 
-      <nav className={`hdr__nav ${open ? 'is-open' : ''}`} aria-label="Hauptkategorien">
+      <nav className="hdr__nav" aria-label="Hauptkategorien">
         <div className="shell hdr__nav-inner">
           {CATEGORIES.map((c) => (
             <a

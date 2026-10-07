@@ -6,10 +6,10 @@
   --card-2: #f4f9f6;
 
   /* Primary brand (green). Variable names kept as --blue* for stability. */
-  --blue: #1e9e76;
-  --blue-dark: #15805d;
-  --blue-darker: #0c4030;
-  --blue-soft: #e3f5ec;
+  --blue: #61ce70;
+  --blue-dark: #43bd58;
+  --blue-darker: #2a7f3b;
+  --blue-soft: #e9f8ec;
 
   --orange: #ff7a2e;
   --orange-dark: #ec5f10;
