@@ -6,15 +6,17 @@ export function OfferCard({
   offer,
   rank,
   href,
-  imageUrl,
+  images,
 }: {
   offer: Offer
   rank: number
   href: string
-  imageUrl?: string | null
+  images?: string[]
 }) {
-  const [imgOk, setImgOk] = useState(true)
-  const showPhoto = !!imageUrl && imgOk
+  const [idx, setIdx] = useState(0)
+  const list = images ?? []
+  const imageUrl = list[idx]
+  const showPhoto = !!imageUrl
   return (
     <article className={`offer ${rank === 1 ? 'offer--top' : ''}`}>
       <div className="offer__rank">
@@ -33,7 +35,8 @@ export function OfferCard({
               src={imageUrl as string}
               alt={`${offer.provider} ${offer.plan}`}
               loading="lazy"
-              onError={() => setImgOk(false)}
+              referrerPolicy="no-referrer"
+              onError={() => setIdx((i) => (i + 1 < list.length ? i + 1 : i))}
             />
           </div>
         ) : (
