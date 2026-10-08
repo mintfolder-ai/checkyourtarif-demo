@@ -3,7 +3,7 @@ import { CATEGORIES } from '../../data/categories'
 import { OFFERS } from '../../data/offers'
 import { FACETS, type Facet } from '../../data/facets'
 import { CHECK24_WIDGETS } from '../../data/check24'
-import { productImage } from '../../lib/productImage'
+import { productImages } from '../../lib/productImage'
 import { applyFilters, countActive, emptyFilters, type FilterState } from '../../lib/filter'
 import { OfferCard } from './OfferCard'
 import { FilterSidebar } from './FilterSidebar'
@@ -130,7 +130,7 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
                     offer={o}
                     rank={i + 1}
                     href={category.href}
-                    imageUrl={productImage(category.id, o.id)}
+                    images={productImages(category.id, i)}
                   />
                 ))}
               </div>
