@@ -511,11 +511,16 @@
 
 /* ===== Live CHECK24 comparison widget ===== */
 .cmp__live { margin-top: 1.2rem; }
-.c24w { position: relative; width: 100%; min-height: 320px; }
+.c24w { position: relative; width: 100%; min-height: 320px; --c24-crop: 96px; }
 /* The loader injects its own iframe here and auto-sizes it; let it grow freely
-   so the full comparison is visible and the page scrolls normally. */
-.c24w__host { width: 100%; }
-.c24w__host iframe { width: 100% !important; border: 0; display: block; }
+   so the full comparison is visible and the page scrolls normally.
+   We also crop the top of the iframe to hide the CHECK24 header bar
+   (logo/search/nav) — it lives inside a cross-origin iframe, so clipping is the
+   only way to white-label it. --c24-crop is the header height to hide; the host
+   auto-shrinks by the same amount, so the bottom is never cut. */
+.c24w__host { width: 100%; overflow: hidden; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+.c24w__host iframe { width: 100% !important; border: 0; display: block; margin-top: calc(-1 * var(--c24-crop)); }
+@media (max-width: 760px) { .c24w { --c24-crop: 124px; } }
 .c24w__loading {
   position: absolute; inset: 0; z-index: 2;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .9rem;
