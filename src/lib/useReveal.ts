@@ -1,73 +1,89 @@
 import { useEffect } from 'react'
 
 /**
- * Reveals `.reveal` elements as they scroll into view.
+ * Reveals `.reveal` elements as they enter the viewport.
  *
  * `.reveal` starts hidden (opacity 0) and becomes visible once `.is-visible`
- * is added. This MUST re-run whenever the rendered content changes (route
- * navigation), otherwise freshly mounted `.reveal` nodes are never observed and
- * stay invisible — which showed up as a blank page after navigating back. It
- * also reveals anything already in the viewport immediately and has a safety
- * net so no element can ever stay stuck hidden (above the restored scroll
- * position on back/forward, blocked observer, bfcache restore, etc.).
- *
- * Pass a value that changes on navigation (the current route) so the effect
- * re-runs and picks up the new nodes.
+ * is added. Elements are added to the DOM at many times — initial render, route
+ * navigation, and category/tab switches — so a one-shot querySelectorAll would
+ * miss later ones and leave them stuck invisible (this showed up as blank
+ * sections and a blank page after navigating back). A MutationObserver watches
+ * for every `.reveal` node that ever appears and registers it; anything already
+ * in/above the viewport is shown immediately, the rest reveal on scroll, and a
+ * pageshow handler covers bfcache restores. Nothing can stay stuck hidden.
  */
-export function useReveal(dep?: unknown) {
+export function useReveal() {
   useEffect(() => {
     const show = (el: Element) => el.classList.add('is-visible')
-    const pending = () => Array.from(document.querySelectorAll('.reveal:not(.is-visible)'))
+    const vh = () => window.innerHeight || document.documentElement.clientHeight
 
-    let els = pending()
+    const io =
+      'IntersectionObserver' in window
+        ? new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                if (entry.isIntersecting) {
+                  show(entry.target)
+                  io!.unobserve(entry.target)
+                }
+              }
+            },
+            { threshold: 0.12, rootMargin: '0px 0px -5% 0px' },
+          )
+        : null
 
-    // Reveal whatever is already on screen right away (no wait for a callback).
-    const vh = window.innerHeight || document.documentElement.clientHeight
-    for (const el of els) {
+    const register = (el: Element) => {
+      if (el.classList.contains('is-visible')) return
       const r = el.getBoundingClientRect()
-      if (r.top < vh * 0.95 && r.bottom > 0) show(el)
+      // Already on screen (or above it) -> reveal now, no waiting.
+      if (r.height > 0 && r.top < vh() * 0.98 && r.bottom > -40) {
+        show(el)
+        return
+      }
+      if (io) io.observe(el)
+      else show(el)
     }
 
-    els = pending()
-    if (els.length === 0) return
+    const scan = (root: ParentNode = document) =>
+      root.querySelectorAll('.reveal:not(.is-visible)').forEach(register)
 
-    let io: IntersectionObserver | null = null
-    if ('IntersectionObserver' in window) {
-      io = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              show(entry.target)
-              io?.unobserve(entry.target)
-            }
-          }
-        },
-        { threshold: 0.12, rootMargin: '0px 0px -5% 0px' },
-      )
-      els.forEach((el) => io!.observe(el))
-    } else {
-      els.forEach(show)
-    }
+    scan()
 
-    // Safety net: never leave on-screen content hidden. If the observer hasn't
-    // revealed an element that is in or above the viewport shortly after it
-    // mounted, reveal it anyway (below-the-fold elements still animate on
-    // scroll). All remaining get revealed on bfcache restore.
+    // Catch nodes added after the first render (navigation, tab switches, any
+    // re-render) so freshly mounted .reveal nodes are always handled.
+    const mo = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        for (const node of m.addedNodes) {
+          if (node.nodeType !== 1) continue
+          const el = node as Element
+          if (el.classList?.contains('reveal')) register(el)
+          el.querySelectorAll?.('.reveal:not(.is-visible)').forEach(register)
+        }
+      }
+    })
+    mo.observe(document.getElementById('root') ?? document.body, {
+      childList: true,
+      subtree: true,
+    })
+
+    // Safety net + bfcache restore: never leave an on-screen element hidden.
     const revealVisible = () => {
-      const h = window.innerHeight || document.documentElement.clientHeight
-      for (const el of pending()) if (el.getBoundingClientRect().top < h) show(el)
+      const h = vh()
+      for (const el of document.querySelectorAll('.reveal:not(.is-visible)')) {
+        if (el.getBoundingClientRect().top < h) show(el)
+      }
     }
-    const timer = window.setTimeout(revealVisible, 900)
-    // bfcache restore (back/forward from another page) doesn't re-run React.
-    const onPageShow = () => pending().forEach(show)
+    const timer = window.setInterval(revealVisible, 700)
+    const onPageShow = () => scan()
     window.addEventListener('pageshow', onPageShow)
 
     return () => {
       io?.disconnect()
-      window.clearTimeout(timer)
+      mo.disconnect()
+      window.clearInterval(timer)
       window.removeEventListener('pageshow', onPageShow)
     }
-  }, [dep])
+  }, [])
 }
 
 export function prefersReducedMotion(): boolean {

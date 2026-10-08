@@ -80,7 +80,7 @@ export function CompareModule({ activeCat, setActiveCat, note }: Props) {
         )}
 
         {widget ? (
-          <div className="cmp__live reveal">
+          <div className="cmp__live">
             <Check24Widget key={category.id} widget={widget} />
             <p className="cmp__disclaimer">
               Live-Vergleich bereitgestellt über CHECK24. Die persönliche Berechnung

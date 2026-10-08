@@ -17,10 +17,16 @@ export default function App() {
   const [activeCat, setActiveCat] = useState('strom')
   const [note, setNote] = useState<string | null>(null)
 
-  useReveal(route)
+  useReveal()
   useEffect(() => {
     window.scrollTo({ top: 0 })
   }, [route])
+
+  // Switching category manually clears any stale AI-search note.
+  const selectCat = useCallback((id: string) => {
+    setActiveCat(id)
+    setNote(null)
+  }, [])
 
   const pick = useCallback((catId: string, msg: string) => {
     const h = window.location.hash
@@ -46,7 +52,7 @@ export default function App() {
     content = (
       <>
         <Hero onPick={pick} />
-        <CompareModule activeCat={activeCat} setActiveCat={setActiveCat} note={note} />
+        <CompareModule activeCat={activeCat} setActiveCat={selectCat} note={note} />
         <AIBand />
         <TrustBand />
         <Steps />
