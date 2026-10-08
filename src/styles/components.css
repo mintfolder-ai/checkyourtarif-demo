@@ -518,25 +518,21 @@
    (logo/search/nav) — it lives inside a cross-origin iframe, so clipping is the
    only way to white-label it. --c24-crop is the header height to hide; the host
    auto-shrinks by the same amount, so the bottom is never cut. */
-/* Fixed-height window with its own scrollbar: the outer page stays put and the
-   comparison scrolls inside the widget. The CHECK24 header is cropped off the
-   top via the negative margin so it is never shown or scrolled to. */
+/* The loader injects its own iframe here and auto-sizes it to the full content
+   height; let it grow freely so the whole comparison is visible and the page
+   scrolls normally. (A fixed-height inner scrollbar is not possible here: the
+   widget is a cross-origin iframe, so wheel/touch over it can't scroll an outer
+   container.) The CHECK24 header is cropped via the negative margin. */
 .c24w__host {
   width: 100%;
-  height: var(--c24-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+  overflow: hidden;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   border: 1px solid var(--line);
   background: #fff;
 }
 .c24w__host iframe { width: 100% !important; border: 0; display: block; margin-top: calc(-1 * var(--c24-crop)); }
-.c24w { --c24-height: 78vh; }
-@media (min-width: 761px) { .c24w { --c24-height: min(820px, 80vh); } }
-@media (max-width: 760px) { .c24w { --c24-crop: 124px; --c24-height: 80vh; } }
+@media (max-width: 760px) { .c24w { --c24-crop: 124px; } }
 .c24w__loading {
   position: absolute; inset: 0; z-index: 2;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .9rem;
