@@ -38,17 +38,6 @@ export const CATEGORIES: Category[] = [
     accent: 'gold',
   },
   {
-    id: 'paket',
-    name: 'Strom & Gas',
-    tagline: 'Strom und Gas im Komplettpaket vergleichen und doppelt sparen.',
-    savings: '1.200',
-    savingsUnit: '€ / Jahr',
-    icon: 'bolt',
-    href: `${BASE}/energievergleich`,
-    keywords: ['paket', 'komplett', 'strom und gas', 'energie', 'energievergleich', 'buendel'],
-    accent: 'gold',
-  },
-  {
     id: 'dsl',
     name: 'DSL & Internet',
     tagline: 'Highspeed-Internet zum Bestpreis mit Cashback.',
@@ -124,6 +113,17 @@ export const CATEGORIES: Category[] = [
     href: `${BASE}/top-deals`,
     keywords: ['tablet', 'ipad', 'galaxy tab', 'surface'],
     accent: 'gold',
+  },
+  {
+    id: 'paket',
+    name: 'Pauschalreisen',
+    tagline: 'Urlaubsreisen inkl. Flug & Hotel zum Bestpreis vergleichen.',
+    savings: '163',
+    savingsUnit: '€ p. P.',
+    icon: 'plane',
+    href: `${BASE}/pauschalreisen`,
+    keywords: ['reise', 'urlaub', 'pauschalreise', 'hotel', 'flug', 'ferien', 'last minute'],
+    accent: 'blue',
   },
 ]
 

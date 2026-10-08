@@ -2,77 +2,51 @@ import { useEffect, useRef, useState } from 'react'
 import type { Check24Widget as Widget } from '../../data/check24'
 
 /**
- * Mounts a live CHECK24 partner widget inside an isolated <iframe>.
- *
- * The CHECK24 loader scripts can use document.write; running them directly in
- * the page would wipe the whole SPA (blank page on load / tab switch, mostly on
- * mobile). Hosting each widget in its own srcdoc iframe keeps any document.write
- * contained to that iframe, so the main page never goes blank. The iframe is
- * auto-sized from CHECK24's postMessage height events, with a generous fallback
- * height so the area is never visually empty.
+ * Mounts a live CHECK24 partner widget using the official embed method: a target
+ * <div> with the fixed id (+ data-* attributes) and the loader <script>. The
+ * loader injects CHECK24's comparison iframe into the div and auto-sizes it to
+ * fit its content via postMessage, so the host page grows and scrolls normally
+ * (no fixed height, no clipping). Everything is created fresh on mount and torn
+ * down on unmount, so switching category tabs re-initialises cleanly.
  */
 export function Check24Widget({ widget }: { widget: Widget }) {
-  const frameRef = useRef<HTMLIFrameElement>(null)
+  const hostRef = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
-  const [failed, setFailed] = useState(false)
 
   useEffect(() => {
+    const host = hostRef.current
+    if (!host) return
     setReady(false)
-    setFailed(false)
+    host.innerHTML = ''
 
-    const dataAttrs = widget.data
-      ? Object.entries(widget.data)
-          .map(([k, v]) => `data-${k}="${v}"`)
-          .join(' ')
-      : ''
-
-    const srcdoc =
-      '<!doctype html><html lang="de"><head>' +
-      '<meta charset="utf-8">' +
-      '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-      '<base target="_top">' +
-      '<style>html,body{margin:0;padding:0;background:transparent;' +
-      "font-family:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif}" +
-      'iframe{width:100%!important;border:0}</style></head><body>' +
-      `<div style="width:100%" id="${widget.containerId}" ${dataAttrs}></div>` +
-      // NOT async: run synchronously during the iframe's parse so a loader that
-      // uses document.write inserts inline here (contained to this iframe) instead
-      // of being ignored by the browser.
-      `<scr` + `ipt src="${widget.scriptSrc}"></scr` + `ipt>` +
-      '</body></html>'
-
-    const frame = frameRef.current
-    if (frame) frame.srcdoc = srcdoc
-
-    // CHECK24 widgets post their rendered height; apply it to the iframe.
-    const onMessage = (e: MessageEvent) => {
-      if (!/check24/i.test(e.origin)) return
-      let h: number | null = null
-      const d = e.data
-      if (typeof d === 'number') h = d
-      else if (d && typeof d === 'object' && typeof (d as { height?: number }).height === 'number')
-        h = (d as { height: number }).height
-      else if (typeof d === 'string') {
-        const m = d.match(/(\d{3,5})/)
-        if (m && /(height|iframe|c24|size)/i.test(d)) h = parseInt(m[1], 10)
-      }
-      if (h && h > 320 && h < 6000 && frameRef.current) {
-        frameRef.current.style.height = h + 'px'
-        setReady(true)
-      }
+    const target = document.createElement('div')
+    target.style.width = '100%'
+    target.id = widget.containerId
+    if (widget.data) {
+      for (const [k, v] of Object.entries(widget.data)) target.setAttribute(`data-${k}`, v)
     }
-    window.addEventListener('message', onMessage)
+    host.appendChild(target)
 
-    // If nothing has rendered after a while, surface a graceful fallback.
-    const failTimer = window.setTimeout(() => setFailed((f) => (ready ? f : true)), 15000)
-    const readyTimer = window.setTimeout(() => setReady(true), 4000)
+    const script = document.createElement('script')
+    script.src = widget.scriptSrc
+    script.async = true
+    host.appendChild(script)
+
+    // Hide the spinner once the widget has injected its comparison iframe.
+    const mo = new MutationObserver(() => {
+      if (target.querySelector('iframe')) {
+        setReady(true)
+        mo.disconnect()
+      }
+    })
+    mo.observe(target, { childList: true, subtree: true })
+    const fallback = window.setTimeout(() => setReady(true), 6000)
 
     return () => {
-      window.removeEventListener('message', onMessage)
-      window.clearTimeout(failTimer)
-      window.clearTimeout(readyTimer)
+      mo.disconnect()
+      window.clearTimeout(fallback)
+      host.innerHTML = ''
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [widget.containerId, widget.scriptSrc])
 
   return (
@@ -83,19 +57,7 @@ export function Check24Widget({ widget }: { widget: Widget }) {
           <span>Live-Vergleich wird geladen …</span>
         </div>
       )}
-      <iframe
-        ref={frameRef}
-        className="c24w__frame"
-        title="CHECK24 Live-Vergleich"
-        scrolling="no"
-        onLoad={() => window.setTimeout(() => setReady(true), 1200)}
-      />
-      {failed && (
-        <p className="c24w__fallback">
-          Der Live-Vergleich lädt gerade nicht. Bitte lade die Seite neu oder
-          deaktiviere einen aktiven Ad-/Script-Blocker.
-        </p>
-      )}
+      <div ref={hostRef} className="c24w__host" />
     </div>
   )
 }
